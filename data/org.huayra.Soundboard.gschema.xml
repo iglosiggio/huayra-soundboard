@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="soundboard">
+	<schema id="org.huayra.Soundboard" path="/org/huayra/Soundboard/">
+	</schema>
+</schemalist>

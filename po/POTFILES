@@ -1,0 +1,9 @@
+data/org.gnome.Soundboard.desktop.in
+data/org.gnome.Soundboard.appdata.xml.in
+data/org.gnome.Soundboard.gschema.xml
+src/soundboard-window.ui
+src/main.c
+src/soundboard-window.c
+
+
+
