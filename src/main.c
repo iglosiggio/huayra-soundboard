@@ -16,11 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <glib/gi18n.h>
-#include "soundboard-config.h"
-#include "soundboard-window.h"
-#include "category-widget.h"
-#include "sample-widget.h"
+#include "main.h"
 
 static void
 on_activate (GtkApplication *app)
@@ -55,6 +51,14 @@ on_activate (GtkApplication *app)
 	gtk_box_pack_start (content, GTK_WIDGET(category), TRUE, FALSE, 0);
 	gtk_widget_show_all(GTK_WIDGET(category));
 
+	/* Load custom styles */
+	GtkCssProvider *styles = gtk_css_provider_new ();
+	gtk_css_provider_load_from_resource (styles, "/org/huayra/Soundboard/styles.css");
+	gtk_style_context_add_provider_for_screen (gtk_widget_get_screen (GTK_WIDGET(window)),
+						   GTK_STYLE_PROVIDER (styles),
+						   GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	//soundboard_play_sample("https://upload.wikimedia.org/wikipedia/commons/d/db/Gimn_Sovetskogo_Soyuza_%281977_Vocal%29.oga");
+
 	/* Ask the window manager/compositor to present the window. */
 	gtk_window_present (window);
 }
@@ -76,7 +80,7 @@ main (int   argc,
 	 * application windows, integration with the window manager/compositor, and
 	 * desktop features such as file opening and single-instance applications.
 	 */
-	app = gtk_application_new ("org.gnome.Soundboard", G_APPLICATION_FLAGS_NONE);
+	app = gtk_application_new ("org.huayra.Soundboard", G_APPLICATION_FLAGS_NONE);
 
 	/*
 	 * We connect to the activate signal to create a window when the application
@@ -88,6 +92,10 @@ main (int   argc,
 	 * our "on_activate" function to a GCallback.
 	 */
 	g_signal_connect (app, "activate", G_CALLBACK (on_activate), NULL);
+
+	player = gst_player_new (NULL, NULL);
+	g_signal_connect (player, "media-info-updated", G_CALLBACK (soundboard_media_info_updated), NULL);
+	g_signal_connect (player, "position_updated", G_CALLBACK (soundboard_position_updated), NULL);
 
 	/*
 	 * Run the application. This function will block until the applicaiton
@@ -102,4 +110,22 @@ main (int   argc,
 	ret = g_application_run (G_APPLICATION (app), argc, argv);
 
 	return ret;
+}
+
+void soundboard_play_sample (const gchar *sample) {
+	gst_player_set_uri (player, sample);
+	gst_player_play (player);
+}
+
+void soundboard_media_info_updated (GstPlayer          *player,
+                                    GstPlayerMediaInfo *info,
+                                    gpointer            data) {
+	GstClockTime duration = gst_player_media_info_get_duration (info);
+	g_message("DURATION: %lu", GST_TIME_AS_SECONDS (duration));
+}
+
+void soundboard_position_updated (GstPlayer *player,
+                                 guint64    position,
+                                 gpointer   data) {
+	g_message ("%lu", GST_TIME_AS_SECONDS (position));
 }

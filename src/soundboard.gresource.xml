@@ -4,5 +4,6 @@
 		<file>soundboard-window.ui</file>
 		<file>category-widget.ui</file>
 		<file>sample-widget.ui</file>
+		<file>styles.css</file>
 	</gresource>
 </gresources>

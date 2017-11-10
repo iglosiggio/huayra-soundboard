@@ -20,14 +20,14 @@
 
 struct _SampleWidget
 {
-	GtkButton  parent_instance;
+	GtkBox  parent_instance;
 
 	/* Template widgets */
 	GtkProgressBar      *progress;
 	GtkLabel            *duration;
 };
 
-G_DEFINE_TYPE (SampleWidget, sample_widget, GTK_TYPE_BUTTON)
+G_DEFINE_TYPE (SampleWidget, sample_widget, GTK_TYPE_BOX)
 
 static void
 sample_widget_class_init (SampleWidgetClass *klass) {

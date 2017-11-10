@@ -25,7 +25,7 @@ G_BEGIN_DECLS
 
 #define SAMPLE_TYPE_WIDGET (sample_widget_get_type())
 
-G_DECLARE_FINAL_TYPE (SampleWidget, sample_widget, SAMPLE, WIDGET, GtkButton)
+G_DECLARE_FINAL_TYPE (SampleWidget, sample_widget, SAMPLE, WIDGET, GtkBox)
 const gchar* sample_get_duration(SampleWidget *self);
 void sample_set_duration(SampleWidget *self, const gchar* duration);
 
