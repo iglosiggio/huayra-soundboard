@@ -38,26 +38,27 @@ on_activate (GtkApplication *app)
 		                       "default-height", 300,
 		                       NULL);
 
-	GtkBox *content = soundboard_get_content (SOUNDBOARD_WINDOW(window));
+	GtkBox *content = soundboard_get_content (SOUNDBOARD_WINDOW (window));
 	//GtkWidget *label = gtk_label_new("TEST");
 	//gtk_box_pack_start (content, label, TRUE, FALSE, 0);
 	//gtk_widget_show(GTK_WIDGET(label));
 
 	CategoryWidget *category = g_object_new (CATEGORY_TYPE_WIDGET, NULL);
-	SampleWidget *sample = g_object_new (SAMPLE_TYPE_WIDGET, NULL);
+	SampleWidget *sample = sample_widget_new("https://upload.wikimedia.org/wikipedia/commons/d/db/Gimn_Sovetskogo_Soyuza_%281977_Vocal%29.oga",
+						 207);
+	g_signal_connect (sample, "play", G_CALLBACK (soundboard_play_sample), NULL);
 	category_append_sample (category, sample);
 	category_append_sample (category, g_object_new (SAMPLE_TYPE_WIDGET, NULL));
 	category_append_sample (category, g_object_new (SAMPLE_TYPE_WIDGET, NULL));
 	gtk_box_pack_start (content, GTK_WIDGET(category), TRUE, FALSE, 0);
-	gtk_widget_show_all(GTK_WIDGET(category));
+	gtk_widget_show_all(GTK_WIDGET (category));
 
 	/* Load custom styles */
 	GtkCssProvider *styles = gtk_css_provider_new ();
 	gtk_css_provider_load_from_resource (styles, "/org/huayra/Soundboard/styles.css");
-	gtk_style_context_add_provider_for_screen (gtk_widget_get_screen (GTK_WIDGET(window)),
+	gtk_style_context_add_provider_for_screen (gtk_widget_get_screen (GTK_WIDGET (window)),
 						   GTK_STYLE_PROVIDER (styles),
 						   GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-	//soundboard_play_sample("https://upload.wikimedia.org/wikipedia/commons/d/db/Gimn_Sovetskogo_Soyuza_%281977_Vocal%29.oga");
 
 	/* Ask the window manager/compositor to present the window. */
 	gtk_window_present (window);
@@ -112,7 +113,12 @@ main (int   argc,
 	return ret;
 }
 
-void soundboard_play_sample (const gchar *sample) {
+void soundboard_play_sample (const SampleWidget *sample_widget) {
+	const gchar* sample = sample_get_sample(sample_widget);
+
+	g_message ("PLAYING: %s", sample);
+
+	gst_player_stop (player);
 	gst_player_set_uri (player, sample);
 	gst_player_play (player);
 }

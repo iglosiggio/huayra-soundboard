@@ -18,14 +18,23 @@
 
 #include "sample-widget.h"
 
-struct _SampleWidget
-{
-	GtkBox  parent_instance;
+struct _SampleWidget {
+	GtkBox parent_instance;
+
+	gchar *sample;
+	glong audio_length;
 
 	/* Template widgets */
 	GtkProgressBar      *progress;
 	GtkLabel            *duration;
 };
+
+enum {
+	SIGNAL_PLAY = 1,
+	LAST_SIGNAL
+};
+
+static gint signals[LAST_SIGNAL] = {0};
 
 G_DEFINE_TYPE (SampleWidget, sample_widget, GTK_TYPE_BOX)
 
@@ -37,9 +46,20 @@ sample_widget_class_init (SampleWidgetClass *klass) {
 	gtk_widget_class_bind_template_child (widget_class, SampleWidget, progress);
 	gtk_widget_class_bind_template_child (widget_class, SampleWidget, duration);
 	gtk_widget_class_bind_template_callback (widget_class, sample_play);
+
+	signals [SIGNAL_PLAY] =
+		g_signal_new ("play",
+			      G_TYPE_FROM_CLASS (klass),
+			      G_SIGNAL_RUN_LAST,
+			      0,
+			      NULL,
+			      NULL,
+			      g_cclosure_marshal_generic,
+			      G_TYPE_NONE,
+			      0);
 }
 
-gdouble sample_get_progress (SampleWidget *self) {
+gdouble sample_get_progress (const SampleWidget *self) {
 	return gtk_progress_bar_get_fraction (self->progress);
 }
 
@@ -47,20 +67,33 @@ void sample_set_progress (SampleWidget *self, gdouble value) {
 	gtk_progress_bar_set_fraction (self->progress, value);
 }
 
-const gchar* sample_get_duration (SampleWidget *self) {
+const gchar* sample_get_duration (const SampleWidget *self) {
 	return gtk_label_get_label (self->duration);
 }
 
-void sample_set_duration(SampleWidget *self, const gchar *value) {
+void sample_set_duration (SampleWidget *self, const gchar *value) {
 	gtk_label_set_label (self->duration, value);
 }
 
-void sample_play (GtkWidget *widget, gpointer   data) {
-	g_critical ("-- NO IMPLEMENTADO --");
+const gchar* sample_get_sample (const SampleWidget *self) {
+	return self->sample;
+}
+
+void sample_play (GtkWidget *widget, gpointer data) {
+	SampleWidget *sample_widget = SAMPLE_WIDGET (data);
+	g_signal_emit (sample_widget, signals[SIGNAL_PLAY], 0);
+}
+
+SampleWidget* sample_widget_new (const gchar *sample, glong audio_length) {
+	SampleWidget* self = g_object_new (SAMPLE_TYPE_WIDGET, NULL);
+
+	self->sample = g_strdup(sample);
+	self->audio_length = audio_length;
+
+	return self;
 }
 
 static void
-sample_widget_init (SampleWidget *self)
-{
-  gtk_widget_init_template (GTK_WIDGET (self));
+sample_widget_init (SampleWidget *self) {
+	gtk_widget_init_template (GTK_WIDGET (self));
 }

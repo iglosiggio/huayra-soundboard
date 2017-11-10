@@ -18,7 +18,7 @@
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="receives_default">True</property>
-        <signal name="clicked" handler="sample_play" swapped="no"/>
+        <signal name="clicked" handler="sample_play" object="SampleWidget" swapped="no"/>
         <child>
           <object class="GtkImage">
             <property name="visible">True</property>

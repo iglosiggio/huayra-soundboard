@@ -23,7 +23,7 @@
 #include "category-widget.h"
 #include "sample-widget.h"
 
-void soundboard_play_sample(const gchar *sample);
+void soundboard_play_sample(const SampleWidget *sample_widget);
 void soundboard_media_info_updated (GstPlayer          *player,
                                     GstPlayerMediaInfo *info,
                                     gpointer            data);

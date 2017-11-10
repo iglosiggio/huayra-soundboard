@@ -24,13 +24,17 @@
 G_BEGIN_DECLS
 
 #define SAMPLE_TYPE_WIDGET (sample_widget_get_type())
-
 G_DECLARE_FINAL_TYPE (SampleWidget, sample_widget, SAMPLE, WIDGET, GtkBox)
-const gchar* sample_get_duration(SampleWidget *self);
-void sample_set_duration(SampleWidget *self, const gchar* duration);
 
-gdouble sample_get_progress(SampleWidget *self);
-void sample_set_progress(SampleWidget *self, gdouble progress);
+const gchar* sample_get_duration (const SampleWidget *self);
+void sample_set_duration (SampleWidget *self, const gchar* duration);
 
-void sample_play(GtkWidget *widget, gpointer   data);
+gdouble sample_get_progress (const SampleWidget *self);
+void sample_set_progress (SampleWidget *self, gdouble progress);
+
+const gchar* sample_get_sample (const SampleWidget *self);
+
+void sample_play (GtkWidget *widget, gpointer data);
+
+SampleWidget* sample_widget_new (const gchar *sample, glong audio_length);
 G_END_DECLS
