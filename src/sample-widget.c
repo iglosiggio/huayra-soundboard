@@ -22,8 +22,8 @@ struct _SampleWidget {
 	GtkBox parent_instance;
 
 	gchar *sample;
-	glong audio_length;
-	glong current_pos;
+	glong audio_length; /* mseconds */
+	glong current_pos;  /* mseconds */
 
 	/* Template widgets */
 	GtkProgressBar      *progress;
@@ -83,10 +83,10 @@ void sample_set_current_pos (SampleWidget *self,
 }
 
 static void sample_update_progress (SampleWidget *self) {
-	glong audio_length_minutes = self->audio_length / 60,
-	      audio_length_seconds = self->audio_length % 60,
-	      current_pos_minutes  = self->current_pos  / 60,
-	      current_pos_seconds  = self->current_pos  % 60;
+	glong audio_length_minutes = self->audio_length / 1000 / 60,
+	      audio_length_seconds = self->audio_length / 1000 % 60,
+	      current_pos_minutes  = self->current_pos  / 1000 / 60,
+	      current_pos_seconds  = self->current_pos  / 1000 % 60;
 	gdouble progress = ((gdouble) self->current_pos) / ((gdouble) self->audio_length);
 
 	gchar  *string_value = g_strdup_printf ("%.2lu:%.2lu/%.2lu:%.2lu",

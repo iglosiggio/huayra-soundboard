@@ -45,11 +45,11 @@ on_activate (GtkApplication *app)
 
 	CategoryWidget *category = g_object_new (CATEGORY_TYPE_WIDGET, NULL);
 	SampleWidget *sample_urss = sample_widget_new ("https://upload.wikimedia.org/wikipedia/commons/d/db/Gimn_Sovetskogo_Soyuza_%281977_Vocal%29.oga",
-						       207);
+						       207000);
 	SampleWidget *sample_tango = sample_widget_new ("https://upload.wikimedia.org/wikipedia/commons/7/7f/El_d%C3%ADa_que_me_quieras.ogg",
-						        208);
+						        208000);
 	SampleWidget *sample_meow = sample_widget_new ("https://upload.wikimedia.org/wikipedia/commons/5/53/Felis_silvestris_catus_meows.ogg",
-						       11);
+						       11000);
 	g_signal_connect (sample_urss,  "play", G_CALLBACK (soundboard_play_sample), NULL);
 	g_signal_connect (sample_tango, "play", G_CALLBACK (soundboard_play_sample), NULL);
 	g_signal_connect (sample_meow,  "play", G_CALLBACK (soundboard_play_sample), NULL);
@@ -141,14 +141,14 @@ void soundboard_media_info_updated (GstPlayer          *player,
 				    GstPlayerMediaInfo *info,
 				    gpointer            data) {
 	GstClockTime duration = gst_player_media_info_get_duration (info);
-	g_message("DURATION: %lu", GST_TIME_AS_SECONDS (duration));
+	glong seconds = GST_TIME_AS_SECONDS (duration);
+	g_message("DURATION: %lumin %lusec", seconds / 60, seconds % 60);
 }
 
 void soundboard_position_updated (GstPlayer *player,
 				  guint64    position,
 				  gpointer   data) {
-	sample_set_current_pos (playing_sample, GST_TIME_AS_SECONDS (position));
-	g_message ("%lu", GST_TIME_AS_SECONDS (position));
+	sample_set_current_pos (playing_sample, GST_TIME_AS_MSECONDS (position));
 }
 
 void soundboard_state_changed (GstPlayer      *player,
