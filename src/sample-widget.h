@@ -36,5 +36,7 @@ const gchar* sample_get_sample (const SampleWidget *self);
 
 void sample_play (GtkWidget *widget, gpointer data);
 
-SampleWidget* sample_widget_new (const gchar *sample, glong audio_length);
+SampleWidget* sample_widget_new (const gchar *sample,
+				 const gchar *sample_name,
+				 glong        audio_length);
 G_END_DECLS

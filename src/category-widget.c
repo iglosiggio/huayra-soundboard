@@ -51,6 +51,14 @@ void category_append_sample(CategoryWidget *self, SampleWidget *sample) {
 	gtk_list_box_insert (self->contenido, GTK_WIDGET(sample), -1);
 }
 
+CategoryWidget* category_widget_new(const gchar *name) {
+	CategoryWidget *self = g_object_new (CATEGORY_TYPE_WIDGET, NULL);
+
+	gtk_label_set_text (self->titulo, name);
+
+	return self;
+}
+
 static void
 category_widget_init (CategoryWidget *self) {
 	gtk_widget_init_template (GTK_WIDGET (self));

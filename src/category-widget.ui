@@ -14,7 +14,7 @@
         <property name="margin_right">5</property>
         <property name="margin_top">9</property>
         <property name="margin_bottom">9</property>
-        <property name="label" translatable="yes">titulo-categoria</property>
+        <property name="label">titulo-categoria</property>
         <attributes>
           <attribute name="weight" value="ultrabold"/>
           <attribute name="scale" value="4"/>

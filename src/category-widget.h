@@ -31,4 +31,6 @@ GtkLabel* category_get_titulo(CategoryWidget *category);
 void category_append_sample(CategoryWidget *self, SampleWidget *sample);
 
 void category_widget_agregar_sample(GtkWidget *widget, gpointer data);
+
+CategoryWidget* category_widget_new(const gchar *name);
 G_END_DECLS

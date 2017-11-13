@@ -43,13 +43,16 @@ on_activate (GtkApplication *app)
 	//gtk_box_pack_start (content, label, TRUE, FALSE, 0);
 	//gtk_widget_show(GTK_WIDGET(label));
 
-	CategoryWidget *category = g_object_new (CATEGORY_TYPE_WIDGET, NULL);
+	CategoryWidget *category = category_widget_new("Sonidos de prueba");
 	SampleWidget *sample_urss = sample_widget_new ("https://upload.wikimedia.org/wikipedia/commons/d/db/Gimn_Sovetskogo_Soyuza_%281977_Vocal%29.oga",
+						       "Himno de la URSS",
 						       207000);
 	SampleWidget *sample_tango = sample_widget_new ("https://upload.wikimedia.org/wikipedia/commons/7/7f/El_d%C3%ADa_que_me_quieras.ogg",
+							"El dia que me quieras",
 						        208000);
 	SampleWidget *sample_meow = sample_widget_new ("https://upload.wikimedia.org/wikipedia/commons/5/53/Felis_silvestris_catus_meows.ogg",
-						       11000);
+						       "Gatito maullando",
+						       10000);
 	g_signal_connect (sample_urss,  "play", G_CALLBACK (soundboard_play_sample), NULL);
 	g_signal_connect (sample_tango, "play", G_CALLBACK (soundboard_play_sample), NULL);
 	g_signal_connect (sample_meow,  "play", G_CALLBACK (soundboard_play_sample), NULL);
@@ -125,6 +128,7 @@ void soundboard_play_sample (SampleWidget *sample_widget) {
 
 	gst_player_stop (player);
 
+	/* TODO: this shouldn't be neccesary, we need to wait the for the stop to complete */
 	if (playing_sample != NULL) {
 		soundboard_position_updated (player, 0, NULL);
 	}
@@ -148,6 +152,7 @@ void soundboard_media_info_updated (GstPlayer          *player,
 void soundboard_position_updated (GstPlayer *player,
 				  guint64    position,
 				  gpointer   data) {
+	if (playing_sample == NULL) return;
 	sample_set_current_pos (playing_sample, GST_TIME_AS_MSECONDS (position));
 }
 
@@ -157,5 +162,6 @@ void soundboard_state_changed (GstPlayer      *player,
 	if (state == GST_PLAYER_STATE_STOPPED
 	    && playing_sample != NULL) {
 		soundboard_position_updated (player, 0, NULL);
+		/* TODO: playing_sample must be equal to 0 after this */
 	}
 }

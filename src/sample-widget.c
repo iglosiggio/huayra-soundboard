@@ -112,6 +112,7 @@ void sample_play (GtkWidget *widget, gpointer data) {
 }
 
 SampleWidget* sample_widget_new (const gchar *sample,
+				 const gchar *sample_name,
 				 glong        audio_length) {
 	SampleWidget *self = g_object_new (SAMPLE_TYPE_WIDGET, NULL);
 
@@ -119,6 +120,7 @@ SampleWidget* sample_widget_new (const gchar *sample,
 
 	sample_set_duration (self, audio_length);
 	sample_set_current_pos (self, 0);
+	gtk_progress_bar_set_text (self->progress, sample_name);
 
 	return self;
 }
