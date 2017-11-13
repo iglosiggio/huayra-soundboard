@@ -19,9 +19,16 @@
 #pragma once
 
 #include <gtk/gtk.h>
+#include <glib.h>
 #include "sample-widget.h"
 
 G_BEGIN_DECLS
+
+typedef struct {
+	gchar *name;
+	gchar *uri;
+	glong audio_length;
+} Sample;
 
 #define CATEGORY_TYPE_WIDGET (category_widget_get_type())
 
@@ -32,5 +39,5 @@ void category_append_sample(CategoryWidget *self, SampleWidget *sample);
 
 void category_widget_agregar_sample(GtkWidget *widget, gpointer data);
 
-CategoryWidget* category_widget_new(const gchar *name);
+CategoryWidget* category_widget_new(const gchar *name, Sample *samples, GCallback onplay);
 G_END_DECLS

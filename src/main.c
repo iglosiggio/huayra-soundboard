@@ -34,31 +34,24 @@ on_activate (GtkApplication *app)
 	if (window == NULL)
 		window = g_object_new (SOUNDBOARD_TYPE_WINDOW,
 		                       "application", app,
-		                       "default-width", 600,
+		                       "default-width", 400,
 		                       "default-height", 300,
 		                       NULL);
 
 	GtkBox *content = soundboard_get_content (SOUNDBOARD_WINDOW (window));
-	//GtkWidget *label = gtk_label_new("TEST");
-	//gtk_box_pack_start (content, label, TRUE, FALSE, 0);
-	//gtk_widget_show(GTK_WIDGET(label));
 
-	CategoryWidget *category = category_widget_new("Sonidos de prueba");
-	SampleWidget *sample_urss = sample_widget_new ("https://upload.wikimedia.org/wikipedia/commons/d/db/Gimn_Sovetskogo_Soyuza_%281977_Vocal%29.oga",
-						       "Himno de la URSS",
-						       207000);
-	SampleWidget *sample_tango = sample_widget_new ("https://upload.wikimedia.org/wikipedia/commons/7/7f/El_d%C3%ADa_que_me_quieras.ogg",
-							"El dia que me quieras",
-						        208000);
-	SampleWidget *sample_meow = sample_widget_new ("https://upload.wikimedia.org/wikipedia/commons/5/53/Felis_silvestris_catus_meows.ogg",
-						       "Gatito maullando",
-						       10000);
-	g_signal_connect (sample_urss,  "play", G_CALLBACK (soundboard_play_sample), NULL);
-	g_signal_connect (sample_tango, "play", G_CALLBACK (soundboard_play_sample), NULL);
-	g_signal_connect (sample_meow,  "play", G_CALLBACK (soundboard_play_sample), NULL);
-	category_append_sample (category, sample_urss);
-	category_append_sample (category, sample_tango);
-	category_append_sample (category, sample_meow);
+	CategoryWidget *category = category_widget_new("Sonidos de prueba", (Sample[]){
+		{"Himno de la URSS",
+		 "https://upload.wikimedia.org/wikipedia/commons/d/db/Gimn_Sovetskogo_Soyuza_%281977_Vocal%29.oga",
+		 207000},
+		{"El dia que me quieras",
+		 "https://upload.wikimedia.org/wikipedia/commons/7/7f/El_d%C3%ADa_que_me_quieras.ogg",
+		 208000},
+		{"Gatito maullando",
+		 "https://upload.wikimedia.org/wikipedia/commons/5/53/Felis_silvestris_catus_meows.ogg",
+		 10000},
+		{NULL}
+	}, G_CALLBACK (soundboard_play_sample));
 	gtk_box_pack_start (content, GTK_WIDGET(category), TRUE, FALSE, 0);
 	gtk_widget_show_all(GTK_WIDGET (category));
 

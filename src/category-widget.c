@@ -44,17 +44,23 @@ GtkLabel* category_get_titulo(CategoryWidget *self) {
 }
 
 void category_widget_agregar_sample(GtkWidget *widget, gpointer data) {
-	g_critical ("AGREGAR_SAMPLE");
+	g_critical ("NO IMPLEMENTADO: category_widget_agregar_sample");
 }
 
 void category_append_sample(CategoryWidget *self, SampleWidget *sample) {
 	gtk_list_box_insert (self->contenido, GTK_WIDGET(sample), -1);
 }
 
-CategoryWidget* category_widget_new(const gchar *name) {
+CategoryWidget* category_widget_new(const gchar *name, Sample *samples, GCallback onplay) {
 	CategoryWidget *self = g_object_new (CATEGORY_TYPE_WIDGET, NULL);
 
 	gtk_label_set_text (self->titulo, name);
+
+	for (Sample *s = samples; s->name != NULL; s++) {
+		SampleWidget *sample_widget = sample_widget_new (s->uri, s->name, s->audio_length);
+		category_append_sample (self, sample_widget);
+		g_signal_connect (sample_widget, "play", onplay, NULL);
+	}
 
 	return self;
 }
