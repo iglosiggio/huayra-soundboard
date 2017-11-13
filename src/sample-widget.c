@@ -23,16 +23,19 @@ struct _SampleWidget {
 
 	gchar *sample;
 	glong audio_length;
+	glong current_pos;
 
 	/* Template widgets */
 	GtkProgressBar      *progress;
-	GtkLabel            *duration;
+	GtkLabel            *progress_label;
 };
 
 enum {
 	SIGNAL_PLAY = 1,
 	LAST_SIGNAL
 };
+
+static void sample_update_progress(SampleWidget *self);
 
 static gint signals[LAST_SIGNAL] = {0};
 
@@ -44,7 +47,7 @@ sample_widget_class_init (SampleWidgetClass *klass) {
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/huayra/Soundboard/sample-widget.ui");
 	gtk_widget_class_bind_template_child (widget_class, SampleWidget, progress);
-	gtk_widget_class_bind_template_child (widget_class, SampleWidget, duration);
+	gtk_widget_class_bind_template_child (widget_class, SampleWidget, progress_label);
 	gtk_widget_class_bind_template_callback (widget_class, sample_play);
 
 	signals [SIGNAL_PLAY] =
@@ -59,20 +62,44 @@ sample_widget_class_init (SampleWidgetClass *klass) {
 			      0);
 }
 
-gdouble sample_get_progress (const SampleWidget *self) {
-	return gtk_progress_bar_get_fraction (self->progress);
+glong sample_get_duration (const SampleWidget *self) {
+	return self->audio_length;
 }
 
-void sample_set_progress (SampleWidget *self, gdouble value) {
-	gtk_progress_bar_set_fraction (self->progress, value);
+void sample_set_duration (SampleWidget *self,
+			  glong         value) {
+	self->audio_length = value;
+	sample_update_progress (self);
 }
 
-const gchar* sample_get_duration (const SampleWidget *self) {
-	return gtk_label_get_label (self->duration);
+glong sample_get_current_pos (const SampleWidget *self) {
+	return self->current_pos;
 }
 
-void sample_set_duration (SampleWidget *self, const gchar *value) {
-	gtk_label_set_label (self->duration, value);
+void sample_set_current_pos (SampleWidget *self,
+			     glong         value) {
+	self->current_pos = value;
+	sample_update_progress (self);
+}
+
+static void sample_update_progress (SampleWidget *self) {
+	glong audio_length_minutes = self->audio_length / 60,
+	      audio_length_seconds = self->audio_length % 60,
+	      current_pos_minutes  = self->current_pos  / 60,
+	      current_pos_seconds  = self->current_pos  % 60;
+	gdouble progress = ((gdouble) self->current_pos) / ((gdouble) self->audio_length);
+
+	gchar  *string_value = g_strdup_printf ("%.2lu:%.2lu/%.2lu:%.2lu",
+						current_pos_minutes,
+						current_pos_seconds,
+						audio_length_minutes,
+						audio_length_seconds);
+
+	gtk_label_set_label (self->progress_label, string_value);
+
+	gtk_progress_bar_set_fraction (self->progress, progress);
+
+	g_free(string_value);
 }
 
 const gchar* sample_get_sample (const SampleWidget *self) {
@@ -84,11 +111,14 @@ void sample_play (GtkWidget *widget, gpointer data) {
 	g_signal_emit (sample_widget, signals[SIGNAL_PLAY], 0);
 }
 
-SampleWidget* sample_widget_new (const gchar *sample, glong audio_length) {
-	SampleWidget* self = g_object_new (SAMPLE_TYPE_WIDGET, NULL);
+SampleWidget* sample_widget_new (const gchar *sample,
+				 glong        audio_length) {
+	SampleWidget *self = g_object_new (SAMPLE_TYPE_WIDGET, NULL);
 
 	self->sample = g_strdup(sample);
-	self->audio_length = audio_length;
+
+	sample_set_duration (self, audio_length);
+	sample_set_current_pos (self, 0);
 
 	return self;
 }

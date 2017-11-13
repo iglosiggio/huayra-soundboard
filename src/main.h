@@ -17,19 +17,22 @@
  */
 
 #include <glib/gi18n.h>
-#include <gst/player/gstplayer.h>
+#include <gst/player/player.h>
 #include "soundboard-config.h"
 #include "soundboard-window.h"
 #include "category-widget.h"
 #include "sample-widget.h"
 
-void soundboard_play_sample(const SampleWidget *sample_widget);
+void soundboard_play_sample (SampleWidget *sample_widget);
 void soundboard_media_info_updated (GstPlayer          *player,
-                                    GstPlayerMediaInfo *info,
-                                    gpointer            data);
+				    GstPlayerMediaInfo *info,
+				    gpointer            data);
 void soundboard_position_updated (GstPlayer *player,
-                                 guint64    position,
-                                 gpointer   data);
+				  guint64    position,
+				  gpointer   data);
+void soundboard_state_changed (GstPlayer      *player,
+			       GstPlayerState  state,
+			       gpointer        data);
 
 GstPlayer *player = NULL;
 SampleWidget *playing_sample = NULL;

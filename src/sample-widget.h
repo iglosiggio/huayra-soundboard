@@ -26,11 +26,11 @@ G_BEGIN_DECLS
 #define SAMPLE_TYPE_WIDGET (sample_widget_get_type())
 G_DECLARE_FINAL_TYPE (SampleWidget, sample_widget, SAMPLE, WIDGET, GtkBox)
 
-const gchar* sample_get_duration (const SampleWidget *self);
-void sample_set_duration (SampleWidget *self, const gchar* duration);
+glong sample_get_duration (const SampleWidget *self);
+void  sample_set_duration (SampleWidget *self, glong duration);
 
-gdouble sample_get_progress (const SampleWidget *self);
-void sample_set_progress (SampleWidget *self, gdouble progress);
+glong sample_get_current_pos (const SampleWidget *self);
+void  sample_set_current_pos (SampleWidget *self, glong current_pos);
 
 const gchar* sample_get_sample (const SampleWidget *self);
 

@@ -44,12 +44,18 @@ on_activate (GtkApplication *app)
 	//gtk_widget_show(GTK_WIDGET(label));
 
 	CategoryWidget *category = g_object_new (CATEGORY_TYPE_WIDGET, NULL);
-	SampleWidget *sample = sample_widget_new("https://upload.wikimedia.org/wikipedia/commons/d/db/Gimn_Sovetskogo_Soyuza_%281977_Vocal%29.oga",
-						 207);
-	g_signal_connect (sample, "play", G_CALLBACK (soundboard_play_sample), NULL);
-	category_append_sample (category, sample);
-	category_append_sample (category, g_object_new (SAMPLE_TYPE_WIDGET, NULL));
-	category_append_sample (category, g_object_new (SAMPLE_TYPE_WIDGET, NULL));
+	SampleWidget *sample_urss = sample_widget_new ("https://upload.wikimedia.org/wikipedia/commons/d/db/Gimn_Sovetskogo_Soyuza_%281977_Vocal%29.oga",
+						       207);
+	SampleWidget *sample_tango = sample_widget_new ("https://upload.wikimedia.org/wikipedia/commons/7/7f/El_d%C3%ADa_que_me_quieras.ogg",
+						        208);
+	SampleWidget *sample_meow = sample_widget_new ("https://upload.wikimedia.org/wikipedia/commons/5/53/Felis_silvestris_catus_meows.ogg",
+						       11);
+	g_signal_connect (sample_urss,  "play", G_CALLBACK (soundboard_play_sample), NULL);
+	g_signal_connect (sample_tango, "play", G_CALLBACK (soundboard_play_sample), NULL);
+	g_signal_connect (sample_meow,  "play", G_CALLBACK (soundboard_play_sample), NULL);
+	category_append_sample (category, sample_urss);
+	category_append_sample (category, sample_tango);
+	category_append_sample (category, sample_meow);
 	gtk_box_pack_start (content, GTK_WIDGET(category), TRUE, FALSE, 0);
 	gtk_widget_show_all(GTK_WIDGET (category));
 
@@ -94,9 +100,10 @@ main (int   argc,
 	 */
 	g_signal_connect (app, "activate", G_CALLBACK (on_activate), NULL);
 
-	player = gst_player_new (NULL, NULL);
+	player = gst_player_new (NULL, gst_player_g_main_context_signal_dispatcher_new (NULL));
 	g_signal_connect (player, "media-info-updated", G_CALLBACK (soundboard_media_info_updated), NULL);
-	g_signal_connect (player, "position_updated", G_CALLBACK (soundboard_position_updated), NULL);
+	g_signal_connect (player, "position-updated",   G_CALLBACK (soundboard_position_updated),   NULL);
+	g_signal_connect (player, "state-changed",      G_CALLBACK (soundboard_state_changed),      NULL);
 
 	/*
 	 * Run the application. This function will block until the applicaiton
@@ -113,25 +120,42 @@ main (int   argc,
 	return ret;
 }
 
-void soundboard_play_sample (const SampleWidget *sample_widget) {
+void soundboard_play_sample (SampleWidget *sample_widget) {
 	const gchar* sample = sample_get_sample(sample_widget);
+
+	gst_player_stop (player);
+
+	if (playing_sample != NULL) {
+		soundboard_position_updated (player, 0, NULL);
+	}
+
+	playing_sample = sample_widget;
 
 	g_message ("PLAYING: %s", sample);
 
-	gst_player_stop (player);
 	gst_player_set_uri (player, sample);
 	gst_player_play (player);
 }
 
 void soundboard_media_info_updated (GstPlayer          *player,
-                                    GstPlayerMediaInfo *info,
-                                    gpointer            data) {
+				    GstPlayerMediaInfo *info,
+				    gpointer            data) {
 	GstClockTime duration = gst_player_media_info_get_duration (info);
 	g_message("DURATION: %lu", GST_TIME_AS_SECONDS (duration));
 }
 
 void soundboard_position_updated (GstPlayer *player,
-                                 guint64    position,
-                                 gpointer   data) {
+				  guint64    position,
+				  gpointer   data) {
+	sample_set_current_pos (playing_sample, GST_TIME_AS_SECONDS (position));
 	g_message ("%lu", GST_TIME_AS_SECONDS (position));
+}
+
+void soundboard_state_changed (GstPlayer      *player,
+			       GstPlayerState  state,
+			       gpointer        data) {
+	if (state == GST_PLAYER_STATE_STOPPED
+	    && playing_sample != NULL) {
+		soundboard_position_updated (player, 0, NULL);
+	}
 }
